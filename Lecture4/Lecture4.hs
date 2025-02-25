@@ -149,5 +149,46 @@ cols :: Matrix a -> Matrix a
 cols [xs]     = [ [x] | x <- xs ] 
 cols (xs:xss) = zipWith (:) xs (cols xss)
 
+-- The most involved function is the boxs function.  We need
+-- to make a row out of each box.  This works by putting three
+-- successive elements together and then transposing the
+-- result using the cols function.
+-- See the illustration on page 95 of Bird's book.
+group :: [a] -> [[a]]
+group [] = []
+group xs = (take 3 xs):(group (drop 3 xs))
+
+ungroup :: [[a]] -> [a] 
+ungroup = concat
+
+boxs :: Matrix a -> Matrix a
+boxs = map ungroup . ungroup .
+       map cols .
+       group . map group
+
+{- 
+At this point we have all the ingredients for the solve function.
+However, we want to improve our solver to be efficient.
+
+The idea is to remove choice from the choice lists before expanding.
+This is similar to how a human reasons: if there is already a 3 in
+a row, then 3 is not an option for any in the cells in that row.
+
+Hence our solve function will be:
+-}
+-- solve = filter valid . expand . prune . choices
+
+-- This function implements the idea described above.  The
+-- fixed helper lists all digits where there are no other choices.
+pruneRow :: Row [Digit] -> Row [Digit]
+pruneRow row = map (remove fixed) row
+    where fixed = [ d | [d] <- row ]
+
+-- This is a function that removes a list of digits from
+-- another list.
+remove :: [Digit] -> [Digit] -> [Digit]
+remove ds [x] = [x]
+remove ds xs  = filter (`notElem` ds) xs
+
 main = return ()
 
