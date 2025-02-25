@@ -166,6 +166,52 @@ boxs = map ungroup . ungroup .
        map cols .
        group . map group
 
+{-
+    Here is an example calculation:
+
+    We want to show that: "boxs . boxs = id"
+
+    And we know:
+    ungroup . group = id
+    group . ungroup = id
+
+    boxs . boxs is:
+    map ungroup . ungroup . map cols . group . map group . 
+    map ungroup . ungroup . map cols . group . map group 
+
+    by map law:
+    map ungroup . ungroup . map cols . group .
+    map (group . ungroup) .
+    ungroup . map cols . group . map group 
+
+    by group inverse:
+    map ungroup . ungroup . map cols . group .
+    map id .
+    ungroup . map cols . group . map group 
+
+    by map law, and composition with identity:
+    map ungroup . ungroup . map cols . group .
+    ungroup . map cols . group . map group 
+
+    by group inverse
+    map ungroup . ungroup . map cols . map cols . group . map group 
+
+    by map law
+    map ungroup . ungroup . map (cols . cols) . group . map group 
+
+    by col is involution 
+    map ungroup . ungroup . group . map group 
+
+    by group inverse 
+    map ungroup . map group 
+
+    by map law
+    map (ungroup . group) 
+
+    by group inverse and map law  
+    id
+-}
+
 {- 
 At this point we have all the ingredients for the solve function.
 However, we want to improve our solver to be efficient.
