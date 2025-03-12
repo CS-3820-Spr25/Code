@@ -46,7 +46,9 @@ unit tests in `Tests.hs` to clarify any ambiguities.
 -- Your task is to develop a recursive definition of the semi-factorial.
 
 semifact :: Int -> Int
-semifact = undefined
+semifact n
+  | n <= 1    = 1
+  | otherwise = n * semifact (n - 2)
 
 --------------------------------------------------------------------------------
 -- 2. The Collatz sequence
@@ -71,7 +73,10 @@ semifact = undefined
 --     example, `1 : [2,3,4]` is the same list as `[1,2,3,4]`.
 
 collatz :: Int -> [Int]
-collatz = undefined
+collatz n
+  | n == 1 = [n]
+  | even n = n : collatz (n `div` 2)
+  | odd n = n : collatz (3 * n + 1)
 
 
 {-------------------------------------------------------------------------------
@@ -105,9 +110,9 @@ Alternatively, there are a couple of functions for manipulating lists:
 -------------------------------------------------------------------------------}
 
 endsInOne :: [Int] -> Bool
-endsInOne []       = undefined
-endsInOne [1]      = undefined
-endsInOne (x : xs) = undefined
+endsInOne []  = False
+endsInOne [1] = True
+endsInOne (x : xs) = endsInOne xs
 
 -- If the Collatz Conjecture is true, what should `endsInOne (collatz n)`
 -- equal (for all positive n)?
@@ -118,14 +123,17 @@ endsInOne (x : xs) = undefined
 --    `evenIndexes ['a','b','c','d']` should return ['b','d']
 
 evenIndexes :: [a] -> [a]
-evenIndexes = undefined
+evenIndexes (_ : x : xs) = x : evenIndexes xs
+evenIndexes _            = []
 
 --------------------------------------------------------------------------------
 -- 5. Write a function which, given a list [x1, x2, x3, x4, ...], computes 0 -
 --    x1 + x2 - x3 + x4 - ....  Given an empty list, you should return 0.
 
 alternating :: [Int] -> Int
-alternating = undefined
+alternating xs = sum (evenIndexes xs) - sum (oddIndexes xs)
+  where oddIndexes [] = []
+        oddIndexes (x : xs) = x : evenIndexes xs
 
 
 {-------------------------------------------------------------------------------
@@ -168,7 +176,11 @@ recursive calls.
 -------------------------------------------------------------------------------}
 
 subsetsum :: [Int] -> Int -> Bool
-subsetsum = undefined
+subsetsum _ 0  = True
+subsetsum [] _ = False
+subsetsum (x:xs) t
+  | t < 0 = False
+  | otherwise = (subsetsum xs (t - x)) || (subsetsum xs t)
 
 {-------------------------------------------------------------------------------
 
@@ -187,7 +199,21 @@ subsetsum = undefined
 -------------------------------------------------------------------------------}
 
 subsetsumResult :: [Int] -> Int -> Maybe [Bool]
-subsetsumResult = undefined
+subsetsumResult []     0   = Just []
+subsetsumResult (x:xs) 0   = attachMaybe False (subsetsumResult xs 0)
+  where
+    attachMaybe :: a -> Maybe [a] -> Maybe [a]
+    attachMaybe _ Nothing   = Nothing
+    attachMaybe x (Just xs) = Just (x:xs)
+subsetsumResult []     _   = Nothing
+subsetsumResult (x:xs) t
+  | t < 0 = Nothing
+  | otherwise = subsetsumAttach (subsetsumResult xs (t - x)) (subsetsumResult xs t)
+      where
+        subsetsumAttach :: Maybe [Bool] -> Maybe [Bool] -> Maybe [Bool]
+        subsetsumAttach (Just bs) _ = Just (True:bs)
+        subsetsumAttach _ (Just bs) = Just (False:bs)
+        subsetsumAttach _ _ = Nothing
 
 {-------------------------------------------------------------------------------
 
@@ -221,4 +247,4 @@ mapNeighbors f x [y]        = [f y x]
 mapNeighbors f x (y1:y2:ys) = (f y1 y2) : (mapNeighbors f x (y2:ys))
 
 myLambda :: Int -> Int -> (Int, Int)
-myLambda = (\x y -> undefined)
+myLambda = (\x y -> (x, y - x))
