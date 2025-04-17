@@ -7,6 +7,6 @@ executable Test
   main-is:             Lecture8.hs
   ghc-options:         -main-is Lecture8
   hs-Source-Dirs:      ./
-  other-modules:       Lecture8A, Lecture8Common, Lecture8
+  other-modules:       Lecture8A, Lecture8B, Lecture8C, Lecture8Common, Lecture8
   build-depends:       HUnit, base
   default-language:    Haskell2010
